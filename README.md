@@ -20,7 +20,7 @@ For auto split functionality, the target property is `LevelSwitch.coreFixAmount`
     0x7C | .coreFixAmount
 ```
 
-Time starts on pressing the Play button on the main menu. This button click invokes a method which launches a couple of coroutines, and ultimately doesn't make any convenient state changes. So, rather than some value used by the game which indicates that a new game has been started, I opted to leverage the properties of the `Button` class itself to detect that the button has been clicked. More accurately, the properties I used belong to `Selectable`, a parent class of `Button`. This class has properties `isPointerInside` and `isPointerDown`, and I detect a click when `isPointerDown` switches from `true` to `false` while `isPointerInside` is `true`. The reason for checking `isPointerInside` is that if the player presses down the mouse button while the mouse is over the Play button but then moves the cursor away from the button before releasing, then a click event will not fire. Once again, here are the path semantics:
+Time starts on pressing the Play button on the main menu. This button click invokes a method which launches a couple of coroutines, and ultimately doesn't make any convenient state changes. So, rather than some value used by the game which indicates that a new game has been started, I opted to leverage the properties of the `Button` class itself to detect that the button has been clicked. The `Button` class has a property named `OnClick`, of type `ButtonClickedEvent`. This in turn has a property named `m_InvokedArray`, of type `object[]`. Before the button has ever been clicked, this value is null (`0x00`), but updates to a valid pointer the moment the button is clicked. So, I detect a click when this value changes from 0 to any other value. Once again, here are the path semantics:
 ```
     SceneManager
     0x48 | .ActiveScene
@@ -39,7 +39,7 @@ Time starts on pressing the Play button on the main menu. This button click invo
     0x30 | .gameObject
     0x30 | .Components
     0x38 | [3] : *Button
-    0x28 | .cppInstance : Button
-    - 0xE0 | .isPointerInside
-    - 0xE1 | .isPointerDown
+    0x28 | .cppInstance : Button3
+    0xE8 | .OnClick : ButtonClickedEvent
+    0x28 | .m_InvokeArray : object[]
 ```
